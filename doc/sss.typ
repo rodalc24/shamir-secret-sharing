@@ -542,7 +542,7 @@ Se reduce a compartir números enteros en un cuerpo $ZZ_p$.
 
 Es posible que más adelante (cuando acabemos la práctica 2) lo combine con AES para cifrar archivos binarios.
 
-Link al repositorio: #link("https://github.com/rodalc24/secret-sharing")
+Link al repositorio: #link("https://github.com/rodalc24/shamir-secret-sharing")
 
 #bibliography("biblio.yaml")
 
