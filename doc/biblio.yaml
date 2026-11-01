@@ -1,0 +1,45 @@
+interpolacion:
+  type: Misc
+  title: Interpolación Polinómica de Lagrange
+  author: Novo, Julia
+  genre: Material docente
+  organization: Departamento de Matemáticas, Universidad Autónoma de Madrid
+  note: Apuntes de la asignatura Cálculo Numérico II
+  language: es
+
+shamir:
+  type: Article
+  title: How to Share a Secret
+  author: Shamir, Adi
+  date: 1979-11
+  page-range: 612-613
+  serial-number:
+    doi: "10.1145/359168.359176"
+  url: https://doi.org/10.1145/359168.359176
+  language: en
+  parent:
+    type: Periodical
+    title: Communications of the ACM
+    volume: 22
+    issue: 11
+    publisher:
+      name: Association for Computing Machinery
+      location: New York, NY, USA
+    serial-number:
+      issn: "0001-0782"
+
+feldman:
+  type: Article
+  title: A practical scheme for non-interactive verifiable secret sharing
+  author: Feldman, Paul
+  date: 1987
+  page-range: 427-438
+  language: en
+  abstract: "This paper presents an extremely efficient, non-interactive protocol for verifiable secret sharing. Verifiable secret sharing (VSS) is a way of bequeathing information to a set of processors such that a quorum of processors is needed to access the information. VSS is a fundamental tool of cryptography and distributed computing. Seemingly difficult problems such as secret bidding, fair voting, leader election, and flipping a fair coin have simple one-round reductions to VSS. There is a constant-round reduction from Byzantine Agreement to non-interactive VSS. Non-interactive VSS provides asynchronous networks with a constant-round simulation of simultaneous broadcast networks whenever even a bare majority of processors are good. VSS is constantly repeated in the simulation of fault-free protocols by faulty systems. As verifiable secret sharing is a bottleneck for so many results, it is essential to find efficient solutions."
+  parent:
+    type: Proceedings
+    title: 28th Annual Symposium on Foundations of Computer Science (sfcs 1987)
+    publisher: IEEE
+    serial-number:
+      isbn: "0818608072"
+      issn: "0272-5428"
