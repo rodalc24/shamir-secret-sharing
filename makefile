@@ -2,7 +2,7 @@
 CC 			:= gcc
 CFLAGS	:= -Ofast
 IFLAGS	:= -Iinclude
-LDFLAGS := -lgmp -lm
+LDFLAGS := -lcrypto
 
 SRC_DIR		:= src
 INC_DIR 	:= include
@@ -13,15 +13,15 @@ all: $(BIN_DIR)/sss
 .PHONY: clean clear
 
 ######## OBJS ###################################
-$(OBJ_DIR)/main.o: $(SRC_DIR)/main.c $(INC_DIR)/aes.h
+$(OBJ_DIR)/main.o: $(SRC_DIR)/main.c $(INC_DIR)/aes.h $(INC_DIR)/sss.h
 $(OBJ_DIR)/aes.o: $(SRC_DIR)/aes.c $(INC_DIR)/aes.h
+$(OBJ_DIR)/sss.o: $(SRC_DIR)/sss.c $(INC_DIR)/sss.h
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@ $(IFLAGS)
 
 ######## BINS ###################################
-$(BIN_DIR)/sss: $(OBJ_DIR)/main.o $(OBJ_DIR)/aes.o
-$(BIN_DIR)/%: $(OBJ_DIR)/%.o
+$(BIN_DIR)/sss: $(OBJ_DIR)/main.o $(OBJ_DIR)/aes.o $(OBJ_DIR)/sss.o
 	@mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(LDFLAGS) 
 
