@@ -16,12 +16,13 @@ all: $(BIN_DIR)/sss
 $(OBJ_DIR)/main.o: $(SRC_DIR)/main.c $(INC_DIR)/aes.h $(INC_DIR)/sss.h
 $(OBJ_DIR)/aes.o: $(SRC_DIR)/aes.c $(INC_DIR)/aes.h
 $(OBJ_DIR)/sss.o: $(SRC_DIR)/sss.c $(INC_DIR)/sss.h
+$(OBJ_DIR)/share.o: $(SRC_DIR)/share.c $(INC_DIR)/share.h
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@ $(IFLAGS)
 
 ######## BINS ###################################
-$(BIN_DIR)/sss: $(OBJ_DIR)/main.o $(OBJ_DIR)/aes.o $(OBJ_DIR)/sss.o
+$(BIN_DIR)/sss: $(OBJ_DIR)/main.o $(OBJ_DIR)/aes.o $(OBJ_DIR)/sss.o $(OBJ_DIR)/share.o
 	@mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(LDFLAGS) 
 
