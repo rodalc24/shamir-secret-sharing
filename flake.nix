@@ -32,6 +32,11 @@
               typstyle
               tinymist
               prettier
+              gdb
+              openssl
+              clang-tools
+              valgrind
+              bear
             ];
           };
         }
