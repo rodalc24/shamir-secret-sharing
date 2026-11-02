@@ -28,8 +28,7 @@ uint8_t sss_gf_inv(uint8_t a) {
   return r;
 }
 
-/* ---------------------------------- split ----------------------------------
- */
+/* --------------------------------- split --------------------------------- */
 
 int sss_split(const uint8_t *secret, size_t len, int threshold,
               int shares_count, uint8_t **shares_out) {
@@ -81,8 +80,7 @@ out:
   return SSS_OK;
 }
 
-/* --------------------------------- combine ---------------------------------
- */
+/* -------------------------------- combine --------------------------------- */
 
 int sss_combine(const uint8_t *shares, int k, size_t len, uint8_t *secret_out) {
   if (shares == NULL || secret_out == NULL || len == 0)

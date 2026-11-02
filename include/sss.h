@@ -6,14 +6,14 @@
 
 /* Return codes */
 #define SSS_OK 0
-#define SSS_ERR_PARAM                                                          \
-  -1 /* bad argument (NULL, bad threshold, duplicate x, ...) */
+#define SSS_ERR_PARAM -1  /* bad argument */
 #define SSS_ERR_RANDOM -2 /* CSPRNG failure */
 #define SSS_ERR_ALLOC -3  /* out of memory */
 
 #define SSS_MAX_SHARES 255
 
-/* Size in bytes of one share for a secret of `len` bytes: [x | y0 ... y(len-1)]
+/*
+ * Size in bytes of one share for a secret of `len` bytes: [x | y0 ... y(len-1)]
  */
 #define SSS_SHARE_SIZE(len) ((len) + 1)
 

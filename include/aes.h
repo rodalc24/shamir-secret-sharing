@@ -15,8 +15,7 @@
 #define AES_ERR_RANDOM -2 /* CSPRNG failure */
 #define AES_ERR_ALLOC -3  /* out of memory */
 #define AES_ERR_CRYPTO -4 /* OpenSSL internal error */
-#define AES_ERR_AUTH -5 /* authentication failed: wrong key or corrupted data  \
-                         */
+#define AES_ERR_AUTH -5   /* authentication failed: wrong key, corrupted data   */
 
 /*
  * Fills `key` with AES_KEY_SIZE random bytes from a CSPRNG.
