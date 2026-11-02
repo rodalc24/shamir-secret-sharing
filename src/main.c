@@ -2,8 +2,8 @@
  * shamir: encrypt a file with a random AES-256-GCM key and split that key
  * with Shamir's Secret Sharing.
  *
- *   shamir encrypt <file> -t <threshold> -n <shares> [-o <prefix>]
- *   shamir decrypt <file.enc> <share>... [-o <output>]
+ *   sss encrypt <file> -t <threshold> -n <shares> [-o <prefix>]
+ *   sss decrypt <file.enc> <share>... [-o <output>]
  */
 #include <errno.h>
 #include <fcntl.h>
@@ -24,10 +24,10 @@ static void usage(void) {
   fprintf(
       stderr,
       "Usage:\n"
-      "  shamir encrypt <file> -t <threshold> -n <shares> [-o <prefix>]\n"
+      "  sss encrypt <file> -t <threshold> -n <shares> [-o <prefix>]\n"
       "      Writes <prefix>.enc and <prefix>.share1 ... <prefix>.share<n>\n"
       "      (prefix defaults to <file>). Any <threshold> shares can decrypt.\n"
-      "  shamir decrypt <file.enc> <share>... [-o <output>]\n"
+      "  sss decrypt <file.enc> <share>... [-o <output>]\n"
       "      Each <share> is a share file, or the share text itself "
       "(SSS1-...).\n"
       "      Output defaults to <file.enc> without .enc; use -o - for "
