@@ -11,7 +11,7 @@ BIN_DIR 	:= bin
 TST_DIR   := test
 
 all: $(BIN_DIR)/sss $(TST_DIR)/test_aes $(TST_DIR)/test_sss $(TST_DIR)/test_share
-.PHONY: clean clear
+.PHONY: clean clear test
 
 ######## OBJS ###################################
 $(OBJ_DIR)/main.o: $(SRC_DIR)/main.c $(INC_DIR)/aes.h $(INC_DIR)/sss.h
@@ -43,3 +43,9 @@ clean:
 
 clear: clean
 	rm -rf $(BIN_DIR) $(TST_DIR)
+
+test: all
+	$(TST_DIR)/test_aes
+	$(TST_DIR)/test_sss
+	$(TST_DIR)/test_share
+	./test.sh $(BIN_DIR)/sss
