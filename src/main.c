@@ -24,7 +24,7 @@ static void usage(void) {
   fprintf(
       stderr,
       "Usage:\n"
-      "  sss encrypt <file> -t <threshold> -n <shares> [-o <prefix>]\n"
+      "  sss encrypt <file> -k <threshold> -n <shares> [-o <prefix>]\n"
       "      Writes <prefix>.enc and <prefix>.share1 ... <prefix>.share<n>\n"
       "      (prefix defaults to <file>). Any <threshold> shares can decrypt.\n"
       "  sss decrypt <file.enc> <share>... [-o <output>]\n"
@@ -152,7 +152,7 @@ static int cmd_encrypt(int argc, char **argv) {
   int t = -1, n = -1;
 
   for (int i = 0; i < argc; i++) {
-    if (!strcmp(argv[i], "-t") && i + 1 < argc)
+    if (!strcmp(argv[i], "-k") && i + 1 < argc)
       t = parse_int(argv[++i]);
     else if (!strcmp(argv[i], "-n") && i + 1 < argc)
       n = parse_int(argv[++i]);

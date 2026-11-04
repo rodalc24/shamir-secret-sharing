@@ -13,7 +13,7 @@ head -c 100000 /dev/urandom > data.bin
 : > empty.bin
 
 # ---- basic 3-of-5 round trip, using several different subsets of shares
-"$BIN" encrypt data.bin -t 3 -n 5 >/dev/null || fail "encrypt"
+"$BIN" encrypt data.bin -k 3 -n 5 >/dev/null || fail "encrypt"
 [ -f data.bin.enc ] && [ -f data.bin.share5 ] || fail "output files missing"
 ok "encrypt writes .enc and 5 shares"
 
@@ -44,13 +44,13 @@ ok "corrupted share identified by position"
 
 # ---- shares from a different encryption
 cp data.bin other.bin
-"$BIN" encrypt other.bin -t 3 -n 5 >/dev/null || fail "second encrypt"
+"$BIN" encrypt other.bin -k 3 -n 5 >/dev/null || fail "second encrypt"
 "$BIN" decrypt data.bin.enc data.bin.share1 data.bin.share2 other.bin.share3 -o out4.bin 2>err.txt && fail "mixed shares accepted"
 grep -q "do not belong" err.txt || fail "mixed shares: wrong message"
 ok "shares from another file fail authentication"
 
 # ---- different threshold in the set
-"$BIN" encrypt other.bin -t 2 -n 3 -o other2 >/dev/null || fail "encrypt t=2"
+"$BIN" encrypt other.bin -k 2 -n 3 -o other2 >/dev/null || fail "encrypt t=2"
 "$BIN" decrypt data.bin.enc data.bin.share1 other2.share1 data.bin.share3 -o out5.bin 2>err.txt && fail "mixed thresholds accepted"
 grep -q "different sets" err.txt || fail "mixed thresholds: wrong message"
 ok "mixed thresholds detected"
@@ -68,7 +68,7 @@ printf '\377' | dd of=tampered.enc bs=1 seek=100 conv=notrunc 2>/dev/null
 ok "tampered ciphertext rejected, no output"
 
 # ---- refuses to overwrite
-"$BIN" encrypt data.bin -t 3 -n 5 2>err.txt && fail "overwrite allowed (encrypt)"
+"$BIN" encrypt data.bin -k 3 -n 5 2>err.txt && fail "overwrite allowed (encrypt)"
 grep -q "already exists" err.txt || fail "no overwrite message"
 "$BIN" decrypt data.bin.enc data.bin.share1 data.bin.share2 data.bin.share3 -o out.bin 2>err.txt && fail "overwrite allowed (decrypt)"
 ok "never overwrites existing files"
@@ -79,15 +79,15 @@ mv data.bin data.orig
 cmp -s data.orig data.bin || fail "default output content"
 ok "default output name strips .enc"
 
-"$BIN" encrypt empty.bin -t 2 -n 2 >/dev/null || fail "encrypt empty"
+"$BIN" encrypt empty.bin -k 2 -n 2 >/dev/null || fail "encrypt empty"
 "$BIN" decrypt empty.bin.enc empty.bin.share1 empty.bin.share2 -o empty.out 2>/dev/null || fail "decrypt empty"
 [ -f empty.out ] && [ ! -s empty.out ] || fail "empty file round trip"
 ok "empty file round trip"
 
-"$BIN" encrypt data.orig -t 1 -n 3 -o p1 2>/dev/null && fail "t=1 accepted"
-"$BIN" encrypt data.orig -t 4 -n 3 -o p2 2>/dev/null && fail "t>n accepted"
-"$BIN" encrypt data.orig -t 2 -n 300 -o p3 2>/dev/null && fail "n>255 accepted"
-"$BIN" encrypt missing.file -t 2 -n 3 -o p4 2>/dev/null && fail "missing input accepted"
+"$BIN" encrypt data.orig -k 1 -n 3 -o p1 2>/dev/null && fail "t=1 accepted"
+"$BIN" encrypt data.orig -k 4 -n 3 -o p2 2>/dev/null && fail "t>n accepted"
+"$BIN" encrypt data.orig -k 2 -n 300 -o p3 2>/dev/null && fail "n>255 accepted"
+"$BIN" encrypt missing.file -k 2 -n 3 -o p4 2>/dev/null && fail "missing input accepted"
 ls p1* p2* p3* p4* >/dev/null 2>&1 && fail "failed encrypt left files behind"
 ok "bad parameters rejected without leaving files"
 
