@@ -5,12 +5,76 @@
 #import "@preview/lilaq:0.5.0" as lq
 #import "@preview/cetz:0.4.2": canvas, draw
 #import "@preview/cetz-plot:0.1.2": plot
+#import "@preview/showybox:2.0.4": showybox
 #set math.equation(
   numbering: (..nums) => numbering("(1)", ..nums),
   supplement: none,
 )
 #set-inherited-levels(1)
 #set-theorion-numbering("1.1")
+
+// Gruvbox Dark palette
+#let gb-bg = rgb("#282828")
+#let gb-bg1 = rgb("#3c3836")
+#let gb-bg2 = rgb("#504945")
+#let gb-fg = rgb("#ebdbb2")
+#let gb-gray = rgb("#928374")
+#let gb-red = rgb("#fb4934")
+#let gb-green = rgb("#b8bb26")
+#let gb-yellow = rgb("#fabd2f")
+#let gb-blue = rgb("#83a598")
+#let gb-purple = rgb("#d3869b")
+#let gb-aqua = rgb("#8ec07c")
+#let gb-orange = rgb("#fe8019")
+
+#let terminal(body) = showybox(
+  frame: (
+    border-color: gb-bg2,
+    body-color: gb-bg,
+    thickness: 1pt,
+    radius: 6pt,
+    inset: (x: 12pt, y: 10pt),
+  ),
+  {
+    set text(
+      font: "DejaVu Sans Mono",
+      size: 8pt,
+      fill: gb-fg,
+    )
+    set par(leading: 0.6em)
+    body
+  },
+)
+
+// Prompt: user@host:dir$
+#let ps1(user: "user@host", dir: "~") = {
+  text(fill: gb-green, weight: "bold", user)
+  text(fill: gb-fg, ":")
+  text(fill: gb-blue, weight: "bold", dir)
+  text(fill: gb-orange, "$ ")
+}
+
+// A prompt followed by a command
+#let cmd(user: "user@host", dir: "~", it) = {
+  ps1(user: user, dir: dir)
+  it
+  linebreak()
+}
+
+// Plain output line
+#let out(it) = {
+  it
+  linebreak()
+}
+
+// Dimmed / comment line
+#let note(it) = {
+  text(fill: gb-gray, it)
+  linebreak()
+}
+
+// Block cursor
+#let cursor = box(width: 5pt, height: 9pt, fill: gb-fg, baseline: 1pt)
 
 #let colores = (
   rgb("#FFD6E0"),
@@ -62,7 +126,7 @@
   titulo: [Shamir's Secret Sharing],
   asignatura: [Fundamentos de Criptografía y Seguridad Informática],
   autores: (
-    ("Rodrigo Alcántara Fernández", "rodrigo.alcántara@estudiante.uam.es"),
+    ("Rodrigo Alcántara Fernández", "rodrigo.alcantara@estudiante.uam.es"),
   ),
   // pareja: [1],
   // grupo: [2301],
@@ -208,7 +272,7 @@ El problema de interpolación de Lagrange consiste en buscar un polinomio $q(x) 
   $
 
   #pagebreak()
-  Ahora calculamos $p(x)$:
+  Ahora calculamos $q(x)$:
   $
     q(x) & = sum_(i=0)^3 l_i (x) y_i = l_0 (x) + l_1 (x) + 2 l_2 (x) + 6 l_3 (x) \
          & = (-1/6 x^3 + 3/2 x^2 - 13/3 x +4) + (1/2 x^3 -4x^2 +19/2 x -6) \
@@ -270,20 +334,20 @@ El problema de interpolación de Lagrange consiste en buscar un polinomio $q(x) 
 
 #remark[
   Sin pérdida de generalidad podemos asumir que el secreto que queremos compartir es (o se puede convertir en) un número entero.
-  Además, vamos a trabajar en un cuerpo $ZZ_p$ con $p$ un número primo mayor que el secreto que se quiere compartir.
+  Además, vamos a trabajar en un cuerpo finito $FF_(p^m)$ con $p$ un número primo y $p^m$ mayor que el secreto que se quiere compartir.
   En la @the:sec veremos que esto es necesario para obtener secreto perfecto.
 ]<obs:num>
 
 #definition[Umbral][
   El umbral del esquema de compartición se define como una tupla $(k, n)$ donde $n$ es el número de trozos en los que se ha repartido el secreto y $k$ es el número mínimo de trozos necesarios para recuperarlo.
-  $n$ está limitado por el orden del cuerpo sobre el que estemos trabajando: $n < p$.
+  $n$ está limitado por el orden del cuerpo sobre el que estemos trabajando: $n < p^m$.
 ]
 
 
 El primer paso es decidir el umbral de nuestro reparto, decidiendo cuántos trozos se van a repartir y cuántos van a ser capaces de reconstruir el secreto.
 Una vez que ya tenemos $n$ y $k$ lo que vamos a buscar es convertir el secreto en un polinomio $q(x)$ de grado menor o igual a $k-1$.
 
-Para ello, elegimos aleatoriamente $a_1, a_2, ..., a_(k-1) in ZZ_p$ de manera uniforme e independiente, y ponemos $a_0$ igual al secreto (que por la @obs:num es un número).
+Para ello, elegimos aleatoriamente $a_1, a_2, ..., a_(k-1) in FF$ de manera uniforme e independiente, y ponemos $a_0$ igual al secreto (que por la @obs:num es un número).
 De esta manera, conocer el polinomio nos da el secreto, ya que basta evaluarlo en $x = 0$ para obtener su término independiente.
 
 Teniendo el polinomio (de grado menor o igual a $k-1$) vamos a obtener $n$ puntos, por ejemplo: $q(1), q(2), q(3), ..., q(n)$.
@@ -305,9 +369,9 @@ Y si conocemos $k' < k$ trozos, ¿tenemos algún ataque con posibilidad de recup
 
 #proof[
   Sean:
-  - $S in ZZ_p$ el secreto que se quiere compartir,
+  - $S in FF$ el secreto que se quiere compartir,
   - $(k,n)$ el umbral del sistema,
-  - $q(x) in ZZ_p [x]$ de grado menor o igual que $k - 1$ escogido como clave y tal que $q(0) = S$,
+  - $q(x) in FF [x]$ de grado menor o igual que $k - 1$ escogido como clave y tal que $q(0) = S$,
   - ${(x_i, q(x_i))}_(i in {1,...,n})$ los trozos repartidos.
 
 
@@ -330,11 +394,12 @@ Y si conocemos $k' < k$ trozos, ¿tenemos algún ataque con posibilidad de recup
 ]
 
 #pagebreak()
-#proposition[Cuando $KK = ZZ_p$ y $p > n$ el sistema tiene seguridad perfecta.]<the:sec>
+#proposition[$forall FF$ cuerpo finito, si $|FF| > n$ el sistema tiene seguridad perfecta.]<the:sec>
 
 #proof[
   #set math.equation(numbering: none)
-  Queremos ver que, aunque tengamos acceso a $k' < k$ trozos, no tenemos ninguna información extra acerca del secreto, es decir: $forall s in ZZ_p$
+  Sea $FF = FF_(p^m)$.
+  Queremos ver que, aunque tengamos acceso a $k' < k$ trozos, no tenemos ninguna información extra acerca del secreto, es decir: $forall s in FF$
   $
     Pr[S = s] = Pr[S = s | "trozos"],
   $
@@ -343,30 +408,30 @@ Y si conocemos $k' < k$ trozos, ¿tenemos algún ataque con posibilidad de recup
   En primer lugar podemos ver que es suficiente con probarlo para $k - 1$ trozos, ya que cualquier conjunto de $k' < k$ está contenido en un conjunto de $k-1$ trozos, por lo que si el secreto es independiente de estos también lo es de cualquier subconjunto suyo.
 
   Sean $(x_1, y_1),...,(x_(k-1),y_(k-1))$ los trozos conocidos.
-  Fijamos $s in ZZ_p$.
-  Cada posible elección de los coeficientes $(a_1,...,a_(k-1)) in ZZ_p^(k-1)$ de $q(x)$ nos da un polinomio $q(x)$ de grado menor o igual a $k-1$ con $q(0) = s$, por lo que tenemos $p^(k-1)$ posibilidades, todas equiprobables con probabilidad $p^(-(k-1))$.
+  Fijamos $s in FF$.
+  Cada posible elección de los coeficientes $(a_1,...,a_(k-1)) in FF^(k-1)$ nos da un polinomio $q(x)$ de grado menor o igual a $k-1$ con $q(0) = s$, por lo que tenemos $(p^m)^(k-1)$ posibilidades, todas equiprobables con probabilidad $(p^m)^(-(k-1))$.
 
   Los trozos son los que hemos visto si y solo si $q(x_i) = y_i quad forall i in {1,2,...,k-1}$, es decir, si $q$ pasa por los $k$ puntos $(0,s)$, $(x_1,y_1)$,..., $(x_(k-1), y_(k-1))$.
   Por el @the:unic, existe exactamente un polinomio de grado menor o igual que $k-1$ que cumple esto.
   Por lo tanto, solo una de las elecciones de $(a_1,...,a_(k-1))$ es compatible, y
   $
-    Pr["trozos" | S = s] = p^(-(k-1)) quad forall s in ZZ_p.
+    Pr["trozos" | S = s] = (p^m)^(-(k-1)) quad forall s in FF.
   $
 
   Por la fórmula de la probabilidad total:
   $
-    Pr["trozos"] = sum_(s in ZZ_p) Pr["trozos" | S = s] Pr[S = s] = p^(-(k-1)) sum_(s in ZZ_p) Pr[S = s] = p^(-(k-1)).
+    Pr["trozos"] = sum_(s in FF) Pr["trozos" | S = s] Pr[S = s] = (p^m)^(-(k-1)) sum_(s in FF) Pr[S = s] = (p^m)^(-(k-1)).
   $
   Luego:
   $
-    Pr[S = s | "trozos"] = (Pr["trozos" | S = s] Pr[S = s]) / Pr["trozos"] = (p^(-(k-1)) Pr[S = s])/(p^(-(k-1))) = Pr[S = s]. quad checkmark
+    Pr[S = s | "trozos"] = (Pr["trozos" | S = s] Pr[S = s]) / Pr["trozos"] = ((p^m)^(-(k-1)) Pr[S = s])/((p^m)^(-(k-1))) = Pr[S = s]. quad checkmark
   $
 ]
 
 = Ejemplo
 
 #remark[
-  En la realidad habría que hacerlo en un cuerpo $ZZ_p$, pero por simplicidad lo voy a hacer en $RR$ (aunque intentando que todos los valores salgan enteros).
+  En la realidad habría que hacerlo en un cuerpo finito ($ZZ_p$ o $FF_(p^n)$), pero por simplicidad lo voy a hacer en $RR$.
 ]
 #example[
   Queremos repartir el secreto 54321 entre 10 personas, de tal manera que 7 de ellas sean capaces de recuperarlo.
@@ -511,8 +576,8 @@ Y si conocemos $k' < k$ trozos, ¿tenemos algún ataque con posibilidad de recup
 A continuación expongo una serie de consideraciones sobre la aplicación práctica de este esquema de compartición:
 
 + Hemos demostrado que este sistema tiene seguridad perfecta cuando trabajamos sobre un cuerpo finito, lo que nos viene bien a la hora de implementar esto en un ordenador.
-  Este cuerpo tiene que ser de orden mayor que el secreto y mayor que $n$ (para garantizar que a cada persona se le puede dar un trozo distinto).
-  Es decir: $p > max(n, s)$.
+  Este cuerpo tiene que ser de orden $p^m$ mayor que el secreto y mayor que $n$ (para garantizar que a cada persona se le puede dar un trozo distinto).
+  Es decir: $p^m > max(n, s)$.
 
 + Como normalmente lo que se quiere compartir es un documento o cualquier fichero binario en general, una opción bastante común es cifrar ese fichero con un sistema estándar y después compartir la clave de descifrado mediante este esquema de compartición de secretos.
   De tal manera que todo el mundo recibe el archivo cifrado y un trozo de la clave.
@@ -536,13 +601,120 @@ A continuación expongo una serie de consideraciones sobre la aplicación práct
 
 = Implementación
 
-En el siguiente repositorio he realizado una pequeña implementación del sistema _Shamir's Secret Sharing_ para ilustrar su funcionamiento.
-No es una implementación completa, en el sentido de que no permite dividir cualquier archivo.
-Se reduce a compartir números enteros en un cuerpo $ZZ_p$.
+#note-box[
+  #show link: underline
+  #show link: set text(fill: blue)
+  Para escribir el código he usado Inteligencia Artificial.
 
-Es posible que más adelante (cuando acabemos la práctica 2) lo combine con AES para cifrar archivos binarios.
+  Link al repositorio: #link("https://github.com/rodalc24/shamir-secret-sharing")
 
-Link al repositorio: #link("https://github.com/rodalc24/shamir-secret-sharing")
+  Se puede compilar usando el comando `make`.
+  El binario generado es `bin/sss` y para ejecutar los tests se puede usar `make test`.
+]
+
+Para ilustrar el funcionamiento de este esquema, he implementado una versión de _Shamir's Secret Sharing_ que permite compartir archivos binarios.
+Para ello hace uso de la biblioteca _openssl_ y cifra el archivo con AES-256-GCM y después reparte la clave.
+
+#terminal[
+  #cmd(user: "shamir@host")[./sss -h]
+  #out(
+    "Usage:
+  sss encrypt <file> -k <threshold> -n <shares> [-o <prefix>]
+      Writes <prefix>.enc and <prefix>.share1 ... <prefix>.share<n>
+      (prefix defaults to <file>). Any <threshold> shares can decrypt.
+  sss decrypt <file.enc> <share>... [-o <output>]
+      Each <share> is a share file, or the share text itself (SSS1-...).
+      Output defaults to <file.enc> without .enc; use -o - for stdout.",
+  )
+]
+
+#heading(level: 2, outlined: false, numbering: none, "Cifrado")
+El proceso de cifrado es el siguiente:
+1. Genera una clave de 32 _bytes_ aleatoria de manera segura (i.e. usando `RAND_bytes`).
+2. Cifra el archivo con esa clave mediante AES-256-GCM y genera un `.enc`.
+3. Aplica el esquema de _Shamir's Secret Sharing_ a la clave, de acuerdo con los parámetros de `n` y `k` proporcionados.
+  La clave se divide _byte_ a _byte_, considerando cada uno de los 32 _bytes_ como un secreto.
+  Para cada _byte_ se construye un polinomio aleatorio en $FF_(2^8)$, con el término constante igual al secreto.
+  Después se evalúa el polinomio en $n$ puntos, asignándole uno a cada trozo.
+4. Escribe cada uno de los trozos en un fichero.
+5. Borra de manera segura la clave, el contenido del archivo y los trozos de la memoria (con `OPENSSL_cleanse`) para evitar posibles filtraciones.
+
+#terminal[
+  #cmd(user: "shamir@host")[ls -1]
+  #out("file.pdf\nsss")
+  #cmd(user: "shamir@host")[./sss encrypt file.pdf -k 3 -n 5]
+  #out[Encrypted 'file.pdf' -> 'file.pdf.enc'
+    Wrote 5 shares (file.pdf.share1 ... file.pdf.share5); any 3 of them can decrypt.]
+  #cmd(user: "shamir@host")[ls -1]
+  #out(
+    "file.pdf
+file.pdf.enc
+file.pdf.share1
+file.pdf.share2
+file.pdf.share3
+file.pdf.share4
+file.pdf.share5
+sss",
+  )
+  #cmd(user: "shamir@host")[cat file.pdf.share\*]
+  #out(
+    "SSS1-3-01f5455964317263336c4dfc08b6c3d4ef124cc6c81c572df5d566c9257e4ecce1-796e039b
+SSS1-3-020856ad6d1e4ce4dd1f22a2ad97b103a355cbff26f1654a4dc5bf5bc967127e1f-30ebc40b
+SSS1-3-03b39154388338cc1b888cd1812019277ef7144b5c26132517094db65f8b41e8e1-508abf8d
+SSS1-3-046e2e077ca92cdf6f4154d44497b6d7cbbffaa61ab53f2733ddbf1468bb915eae-7ec6d5b0
+SSS1-3-05d5e9fe293458f7a9d6faa768201ef3161d25126062494869114df9fe57c2c850-76571f90",
+  )
+]
+
+Cada trozo está formado por las siguientes partes:
+
+#set math.equation(numbering: none)
+$
+  underbrace("SSS1", "Versión")-underbrace(3, k)-underbrace(01, x)underbrace("f5", q_1(x))underbrace(45, q_2(x))underbrace(59, q_3(x)) ...underbrace("e1", q_32(x))-underbrace("796e039b", "checksum")
+$
+
+donde la $x$ es el punto asignado a cada trozo (coincide con su índice) empezando en 1.
+Cada _byte_ posterior es el previamente llamado $y_i$, uno por cada _byte_ de la clave que se ha repartido.
+El _checksum_ se usa para detectar errores y modificaciones del trozo (e.g. de la $k$), pero no protege frente a una modificación maliciosa.
+
+
+#heading(level: 2, outlined: false, numbering: none, "Descifrado")
+El proceso de descifrado es el siguiente:
+1. Lee los trozos, comprobando el _checksum_ y que la $k$ coincide. También mira que la longitud es correcta (33 _bytes_) y que hay un número mayor o igual que $k$ de trozos con distinta $x$.
+2. Reconstruye la clave a partir de los trozos.
+3. Descifra el archivo con la clave usando AES-256-GCM.
+
+#terminal[
+  #cmd(user: "shamir@host")[ls -1]
+  #out(
+    "file.pdf
+file.pdf.enc
+file.pdf.share1
+file.pdf.share2
+file.pdf.share3
+file.pdf.share4
+file.pdf.share5
+sss",
+  )
+  #cmd(
+    user: "shamir@host",
+  )[./sss decrypt file.pdf.enc file.pdf.share\* -o file2.pdf]
+  #out[Decrypted 'file.pdf.enc' -> 'file2.pdf' (used 3 of 5 given shares)]
+  #cmd(user: "shamir@host")[ls -1]
+  #out(
+    "file.pdf
+file.pdf.enc
+file.pdf.share1
+file.pdf.share2
+file.pdf.share3
+file.pdf.share4
+file.pdf.share5
+file2.pdf
+sss",
+  )
+  #cmd(user: "shamir@host")[diff -s file.pdf file2.pdf]
+  #out[Files file.pdf and file2.pdf are identical]
+]
 
 #bibliography("biblio.yaml")
 
